@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 
-interface Office {
+export interface Office {
     length: number
     width: number
     height: number

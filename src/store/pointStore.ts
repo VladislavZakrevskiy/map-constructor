@@ -1,10 +1,17 @@
 import { create } from 'zustand'
 
-interface Point {
+export type NodeType = 'room' | 'corridor' | 'elevator' | 'stairs' | 'entrance'
+
+export interface Point {
+    id: string
+    type: NodeType
     x: number
     y: number
     z: number
-    points: Point[]
+    floor: number
+    name?: string
+    landmarks?: string[]
+    connections: string[]
 }
 
 type State = {
