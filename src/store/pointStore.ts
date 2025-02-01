@@ -19,6 +19,7 @@ type State = {
 }
 
 type Action = {
+    setPoints: (points: Point[]) => void
     addPoint: (point: Point) => void
     deletePoint: (i: number) => void
     updatePoint: (i: number, point: Point) => void
@@ -26,6 +27,7 @@ type Action = {
 
 export const usePointStore = create<State & Action>((set) => ({
     points: [],
+    setPoints: (points) => set(() => ({ points })),
     addPoint: (point) => set((store) => ({ points: [...store.points, point] })),
     deletePoint: (number) => set((store) => ({ points: store.points.filter((_, i) => i !== number) })),
     updatePoint: (number, point) =>

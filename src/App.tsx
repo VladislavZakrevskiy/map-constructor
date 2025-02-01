@@ -1,17 +1,39 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ThreeDrawer } from './components/ThreeDrawer'
-import { useFragmentsStore } from './store/fragmentsStore'
+import { Office, useFragmentsStore } from './store/fragmentsStore'
 import { Button, TextField } from '@mui/material'
-import { usePointStore } from './store/pointStore'
+import { Point, usePointStore } from './store/pointStore'
 import { OfficesForm } from './components/OfficesForm'
 import { PointForm } from './components/PointForm'
 import { useFloorStore } from './store/floorStore'
 
 function App() {
-    const { offices } = useFragmentsStore()
-    const { points } = usePointStore()
+    const { offices, setOffices } = useFragmentsStore()
+    const { points, setPoints } = usePointStore()
     const [mode, setMode] = useState<'2d' | '3d'>('2d')
     const { floor, setFloor } = useFloorStore()
+    const fileRef = useRef<HTMLInputElement | null>(null)
+
+    const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
+        const file = event.target.files?.[0]
+        if (file && file.type === 'application/json') {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+                try {
+                    if (e.target?.result) {
+                        const jsonData = JSON.parse(e.target?.result as string) as { offices: Office[]; nodes: Point[] }
+                        setOffices(jsonData.offices)
+                        setPoints(jsonData.nodes)
+                    }
+                } catch (error) {
+                    console.error('Ошибка при чтении JSON файла:', error)
+                }
+            }
+            reader.readAsText(file)
+        } else {
+            alert('Пожалуйста, выберите JSON файл.')
+        }
+    }
 
     const exportMap = () => {
         const data = { offices: offices, nodes: points.map((point) => ({ ...point, floor })) }
@@ -25,6 +47,10 @@ function App() {
         link.click()
 
         URL.revokeObjectURL(url)
+    }
+
+    const importMap = () => {
+        fileRef.current?.click()
     }
 
     return (
@@ -50,6 +76,12 @@ function App() {
                     <OfficesForm offices={offices} />
                     <PointForm points={points} />
                 </div>
+            </div>
+            <div>
+                <input type="file" className="hidden" ref={fileRef} onChange={handleFileChange} />
+                <Button fullWidth variant="contained" onClick={importMap}>
+                    Импорт
+                </Button>
             </div>
             <Button variant="contained" onClick={exportMap}>
                 Экспорт

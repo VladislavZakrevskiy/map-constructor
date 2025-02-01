@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 
-
 export interface Office {
     length: number
     width: number
@@ -16,6 +15,7 @@ type State = {
 }
 
 type Action = {
+    setOffices: (offices: Office[]) => void
     addOffice: (office: Office) => void
     updateOfiice: (i: number, office: Office) => void
     deleteOffice: (i: number) => void
@@ -23,6 +23,7 @@ type Action = {
 
 export const useFragmentsStore = create<State & Action>((set) => ({
     offices: [],
+    setOffices: (offices) => set(() => ({ offices })),
     addOffice: (office) => set((store) => ({ offices: [...store.offices, office] })),
     deleteOffice: (officeNumber) => set((store) => ({ offices: store.offices.filter((_, i) => i !== officeNumber) })),
     updateOfiice: (officeNumber, office) =>
